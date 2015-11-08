@@ -13,3 +13,13 @@ Following the tutorial by Matt Brubeck on [his website.](limpet.net/mbrubeck/201
 * Block rendering.
 * Background and border colours.
 * Inline stylesheets in *style* elements.
+
+##Usage
+
+```python
+>>> import main
+>>> html = """<div></div>"""
+>>> css = """*{ display: block; padding: 10px; background: #ff0000; }"""
+>>> width, height = 1000, 1000
+>>> main.render_to_file(html, css, width, height, "outfile.ppm")
+```
