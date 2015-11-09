@@ -1,8 +1,8 @@
 from layout import *
 
-class Image:
+class PPMImage:
 	def __init__(self, width, height):
-		self.pixels = [(0, 0, 0)]*(width*height)
+		self.pixels = [(255, 255, 255)]*(width*height)
 		self.height = height
 		self.width = width
 
@@ -21,7 +21,7 @@ class Image:
 			for dy in range(int(height)):
 				self.draw_pixel(x + dx, y + dy, color)
 
-	def dump_ppm(self, file):
+	def dump(self, file):
 		file.write("P3\n")
 		file.write("%s %s\n" % (self.width, self.height))
 		file.write("255\n")
@@ -32,42 +32,53 @@ class Image:
 			file.write(' '.join(row_string) + '\n')
 
 
-def render_background(file, cmd_list, node):
-	if isinstance(node, (InlineNode, BlockNode)):
-		bb = node.dimensions.border_box()
-		background = node.node.get('background')
-		if not background:
-			return
-		cmd_list.append((file.draw_rect, bb.x, bb.y, bb.width, bb.height, background.to_tuple()))
+class PPMRenderer:
+	def __init__(self, width, height):
+		self.image = PPMImage(width, height)
+
+	def render_background(self, cmd_list, node):
+		file = self.image
+		if isinstance(node, (InlineNode, BlockNode)):
+			bb = node.dimensions.border_box()
+			background = node.node.get('background')
+			if not background:
+				return
+			cmd_list.append((file.draw_rect, bb.x, bb.y, bb.width, bb.height, background.to_tuple()))
 
 
-def render_border(file, cmd_list, node):
-	if isinstance(node, (InlineNode, BlockNode)):
-		d = node.dimensions
-		bb = d.border_box()
-		color = node.node.get('border-color')
-		if color is None:
-			return
-		cmd_list.append((file.draw_rect, bb.x, bb.y, d.border.left, bb.height, color))
-		cmd_list.append((file.draw_rect, bb.x + bb.width - d.border.right, bb.y, d.border.right, bb.height, color))
-		cmd_list.append((file.draw_rect, bb.x, bb.y, bb.width, d.border.top, color))
-		cmd_list.append((file.draw_rect, bb.x, bb.y + bb.height - d.border.bottom, bb.width, d.border.bottom, color))
+	def render_border(self, cmd_list, node):
+		file = self.image
+		if isinstance(node, (InlineNode, BlockNode)):
+			d = node.dimensions
+			bb = d.border_box()
+			color = node.node.get('border-color')
+			if color is None:
+				return
+			cmd_list.append((file.draw_rect, bb.x, bb.y, d.border.left, bb.height, color))
+			cmd_list.append((file.draw_rect, bb.x + bb.width - d.border.right, bb.y, d.border.right, bb.height, color))
+			cmd_list.append((file.draw_rect, bb.x, bb.y, bb.width, d.border.top, color))
+			cmd_list.append((file.draw_rect, bb.x, bb.y + bb.height - d.border.bottom, bb.width, d.border.bottom, color))
 
-def render_box(root, cmd_list, image):
-	render_background(image, cmd_list, root)
-	render_border(image, cmd_list, root)
+	def render_image(self, cmd_list, node):
+		pass
 
-	for child in root.children:
-		render_box(child, cmd_list, image)
+	def render_box(self, root, cmd_list):
+		self.render_background(cmd_list, root)
+		self.render_border(cmd_list, root)
 
-def render(nodes, width, height):
-	image =  Image(width, height)
-	cmd_list = []
+		if root.node.node.tag_name == "img":
+			self.render_image(cmd_list, root)
 
-	for node in nodes:
-		render_box(node, cmd_list, image)
+		for child in root.children:
+			render_box(child, cmd_list, image)
 
-	for func, *args in cmd_list:
-		func(*args)
+	def render(self, nodes):
+		cmd_list = []
 
-	return image
+		for node in nodes:
+			self.render_box(node, cmd_list)
+
+		for func, *args in cmd_list:
+			func(*args)
+
+		return self.image
