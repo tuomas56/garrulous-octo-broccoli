@@ -16,10 +16,28 @@ Following the tutorial by Matt Brubeck on [his website.](limpet.net/mbrubeck/201
 
 ##Usage
 
+As API:
+
 ```python
 >>> import main
 >>> html = """<div></div>"""
 >>> css = """*{ display: block; padding: 10px; background: #ff0000; }"""
 >>> width, height = 1000, 1000
 >>> main.render_to_file(html, css, width, height, "outfile.ppm")
+```
+
+From CLI:
+
+```
+usage: main.py [-h] [--html HTML] [--css CSS] [--renderer RENDERER]
+               [--height HEIGHT] [--width WIDTH] [--out OUT]
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --html HTML          html source to render.
+  --css CSS            css to style html with.
+  --renderer RENDERER  renderer to use: ppm, svg, tkinter
+  --height HEIGHT      height of output document.
+  --width WIDTH        width of output document.
+  --out OUT            file to save output to.
 ```
