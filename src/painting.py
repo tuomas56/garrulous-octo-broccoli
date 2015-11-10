@@ -31,10 +31,24 @@ class PPMImage:
 				row_string.append("%s %s %s" % tuple([str(x).rjust(3, ' ') for x in self.get_pixel(x, y)]))
 			file.write(' '.join(row_string) + '\n')
 
-
-class PPMRenderer:
+class SVGImage:
 	def __init__(self, width, height):
-		self.image = PPMImage(width, height)
+		self.width, self.height = width, height
+		self.rects = []
+
+	def draw_rect(self, x, y, width, height, color):
+		self.rects.append((x, y, width, height, color))
+
+	def dump(self, file):
+		file.write('<svg width="%s" height="%s">' % (self.width, self.height))
+		for x, y, width, height, color in self.rects:
+			file.write('<rect x="%s" y="%s" width="%s" height="%s" style="stroke:none;fill:#%x%x%x;" />' % 
+				(x, y, width, height, color[0], color[1], color[2]))
+		file.write('</svg>')
+
+class Renderer:
+	def __init__(self, width, height, image):
+		self.image = image(width, height)
 
 	def render_background(self, cmd_list, node):
 		file = self.image
