@@ -34,8 +34,8 @@ usage: main.py [-h] [--html HTML] [--css CSS] [--renderer RENDERER]
 
 optional arguments:
   -h, --help           show this help message and exit
-  --html HTML          html source to render.
-  --css CSS            css to style html with.
+  --html HTML          html source file to render.
+  --css CSS            css file to style html with.
   --renderer RENDERER  renderer to use: ppm, svg, tkinter
   --height HEIGHT      height of output document.
   --width WIDTH        width of output document.

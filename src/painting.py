@@ -1,4 +1,5 @@
 from layout import *
+import tkinter
 
 class PPMImage:
 	def __init__(self, width, height):
@@ -46,6 +47,22 @@ class SVGImage:
 				(x, y, width, height, color[0], color[1], color[2]))
 		file.write('</svg>')
 
+class TKImage:
+	def __init__(self, width, height):
+		self.width, self.height = width, height
+		self.rects = []
+
+	def draw_rect(self, x, y, width, height, color):
+		self.rects.append((x, y, width, height, color))
+
+	def dump(self):
+		top = tkinter.Tk()
+		canvas = tkinter.Canvas(top, width=self.width, height=self.height)
+		canvas.pack()
+
+		for x, y, width, height, (r, g, b) in self.rects:
+			canvas.create_rectangle(x, y, width, height, fill="#%.2x%.2x%.2x" % (r, g, b), outline="")
+
 class Renderer:
 	def __init__(self, width, height, image):
 		self.image = image(width, height)
@@ -84,7 +101,7 @@ class Renderer:
 			self.render_image(cmd_list, root)
 
 		for child in root.children:
-			render_box(child, cmd_list, image)
+			self.render_box(child, cmd_list)
 
 	def render(self, nodes):
 		cmd_list = []

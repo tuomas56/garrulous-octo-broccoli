@@ -9,6 +9,8 @@ def renderer_string_to_class(s):
 		return painting.PPMImage
 	elif s == 'svg':
 		return painting.SVGImage
+	elif s == 'tkinter':
+		return painting.TKImage
 
 def render_to_image(html_source, css_source, height, width, renderer):
 	tree = html.parse(html_source)
@@ -31,19 +33,33 @@ def render_to_image(html_source, css_source, height, width, renderer):
 
 def main(argv):
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--html', default='', help='html source to render.')
-	parser.add_argument('--css', default='', help='css to style html with.')
+	parser.add_argument('--html', default='', help='html sourc file to render.')
+	parser.add_argument('--css', default='', help='css file to style html with.')
 	parser.add_argument('--renderer', default='ppm', help='renderer to use: ppm, svg, tkinter')
 	parser.add_argument('--height', default=1000, type=int, help='height of output document.')
 	parser.add_argument('--width', default=1000, type=int, help='width of output document.')
 	parser.add_argument('--out', default=None, help='file to save output to.')
 	args = parser.parse_args(argv[1:])
 
-	image = render_to_image(args.html, args.css, args.height, args.width, args.renderer)
+	if args.html != '':
+		with open(args.html, "r") as f:
+			html = f.read()
+	else:
+		css = ''
 
-	if args.out is not None:
+	if args.css != '':
+		with open(args.css, "r") as f:
+			css = f.read()
+	else:
+		css = ''
+
+	image = render_to_image(html, css, args.height, args.width, args.renderer)
+
+	if (args.out is not None) and args.renderer != 'tkinter':
 		with open(args.out, "w") as f:
 			image.dump(f)
+	elif args.renderer == 'tkinter':
+		image.dump()
 
 	return 0
 
