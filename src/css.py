@@ -1,7 +1,7 @@
 from funcparserlib.lexer import make_tokenizer, Token
 from funcparserlib.parser import *
 import functools
-
+import colorsys
 
 token_specs = [
 	('LBR', ("{",)),
@@ -11,7 +11,10 @@ token_specs = [
 	('DOT', ("\.",)),
 	('HASH', ("#",)),
 	('SEMI', (";",)),
-	('TEXT', ('[^{}:\.#; \t\n]+',)),
+	('LPR', ("\(",)),
+	('RPR', ("\)",)),
+	('COMMA', (",",)),
+	('TEXT', ('[^{}\(\):\.#,; \t\n]+',)),
 	('WS', ("[ \t\n]+",))
 ]
 
@@ -66,13 +69,24 @@ def parse_value(value, values):
 		if isinstance(value, str):
 			result.append(Keyword(value))
 		elif isinstance(value, tuple):
-			if value[0].type == 'HASH':
-				result.append(Color(value[1]))
+			if isinstance(value[0], str):
+				if value[0] == 'rgb':
+					result.append(RGBColor(*value[1:]))
+				elif value[0] == 'hsl':
+					result.append(HSLColor(*value[1:]))
+				else:
+					raise ValueError("unsupported color type: %s" % value[0])
+			elif value[0].type == 'HASH':
+				result.append(HexColor(*value[1:]))
 			elif value[0].type == 'NUMBER':
 				result.append(Length(value[0].value, value[1]))
 	return result[0] if len(result) == 1 else result
 
 class Color:
+	def to_tuple(self):
+		return (self.r, self.g, self.b)
+
+class HexColor(Color):
 	def __init__(self, val):
 		val = ''.join([x.value if isinstance(x, Token) else x for x in val])
 
@@ -80,8 +94,13 @@ class Color:
 		self.g = int(val[2:4], 16)
 		self.b = int(val[4:], 16)
 
-	def to_tuple(self):
-		return (self.r, self.g, self.b)
+class RGBColor(Color):
+	def __init__(self, r, g, b):
+		self.r, self.g, self.b = int(r.value), int(g.value), int(b.value)
+
+class HSLColor(Color):
+	def __init__(self, h, s, l):
+		self.r, self.g, self.b = colorsys.hls_to_rgb(h, l, s)
 
 class Length:
 	def __init__(self, val, unit):
@@ -118,13 +137,18 @@ def starred(func):
 		return func(*args)
 	return _starred
 
+make_text = (lambda t: t.value)
+
 toktype = lambda s: some(lambda t: t.type == s)
 tok = lambda typ, val: some(lambda t: t.type == typ and t.value == val)
 lbr = toktype('LBR')
 rbr = toktype('RBR')
+lpr = toktype('LPR')
+rpr = toktype('RPR')
 number = toktype('NUMBER')
 colon = toktype('COLON')
-text = toktype('TEXT') >> (lambda t: t.value)
+comma = toktype('COMMA')
+text = toktype('TEXT') >> make_text
 ws = toktype('WS')
 dot = toktype('DOT')
 semi = toktype('SEMI')
@@ -139,8 +163,9 @@ selector = simple_selector >> starred(Selector)
 unit = text
 keyword = text
 length = number + unit
-color = hash_ + oneplus(number | text)
-value = (keyword | length >> tuple | color >> tuple) + many(keyword | length | color) >> starred(parse_value)
+color = (hash_ + oneplus(number|text))
+color |= (text + skip(lpr) + number + skip(comma) + number + skip(comma) + number + skip(rpr))
+value = (length >> tuple | color >> tuple | keyword) + many(length | color | keyword) >> starred(parse_value)
 
 declaration = text + skip(colon) + value >> starred(Declaration)
 
