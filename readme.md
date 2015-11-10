@@ -9,7 +9,7 @@ Following the tutorial by Matt Brubeck on [his website.](http://limpet.net/mbrub
 
 ##Currently Supports
 
-* Output to PPM P3 format.
+* Output to PPM P3 and SVG formats.
 * Block rendering.
 * Background and border colours.
 * Inline stylesheets in *style* elements.
