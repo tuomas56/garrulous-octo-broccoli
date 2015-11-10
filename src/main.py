@@ -6,7 +6,9 @@ import sys
 
 def renderer_string_to_class(s):
 	if s == 'ppm':
-		return painting.PPMRenderer
+		return painting.PPMImage
+	elif s == 'svg':
+		return painting.SVGImage
 
 def render_to_image(html_source, css_source, height, width, renderer):
 	tree = html.parse(html_source)
@@ -22,7 +24,7 @@ def render_to_image(html_source, css_source, height, width, renderer):
 	for node in layout_tree:
 		node.layout(root)
 
-	renderer = renderer_string_to_class(renderer)(height, width)
+	renderer = painting.Renderer(width, height, renderer_string_to_class(renderer))
 	image = renderer.render(layout_tree)
 
 	return image

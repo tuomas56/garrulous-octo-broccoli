@@ -42,7 +42,7 @@ class SVGImage:
 	def dump(self, file):
 		file.write('<svg width="%s" height="%s">' % (self.width, self.height))
 		for x, y, width, height, color in self.rects:
-			file.write('<rect x="%s" y="%s" width="%s" height="%s" style="stroke:none;fill:#%x%x%x;" />' % 
+			file.write('<rect x="%s" y="%s" width="%s" height="%s" style="stroke:none;fill:#%.2x%.2x%.2x;" />' % 
 				(x, y, width, height, color[0], color[1], color[2]))
 		file.write('</svg>')
 
