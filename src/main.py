@@ -33,9 +33,9 @@ def render_to_image(html_source, css_source, height, width, renderer):
 
 def main(argv):
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--html', default='', help='html sourc file to render.')
+	parser.add_argument('--html', default='', help='html source file to render.')
 	parser.add_argument('--css', default='', help='css file to style html with.')
-	parser.add_argument('--renderer', default='ppm', help='renderer to use: ppm, svg, tkinter')
+	parser.add_argument('--renderer', default='tkinter', help='renderer to use: ppm, svg, tkinter')
 	parser.add_argument('--height', default=1000, type=int, help='height of output document.')
 	parser.add_argument('--width', default=1000, type=int, help='width of output document.')
 	parser.add_argument('--out', default=None, help='file to save output to.')

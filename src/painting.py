@@ -87,6 +87,7 @@ class Renderer:
 			color = node.node.get('border-color')
 			if color is None:
 				return
+			color = color.to_tuple()
 			cmd_list.append((file.draw_rect, bb.x, bb.y, d.border.left, bb.height, color))
 			cmd_list.append((file.draw_rect, bb.x + bb.width - d.border.right, bb.y, d.border.right, bb.height, color))
 			cmd_list.append((file.draw_rect, bb.x, bb.y, bb.width, d.border.top, color))
