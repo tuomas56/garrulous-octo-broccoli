@@ -63,6 +63,8 @@ class TKImage:
 		for x, y, width, height, (r, g, b) in self.rects:
 			canvas.create_rectangle(x, y, width, height, fill="#%.2x%.2x%.2x" % (r, g, b), outline="")
 
+		tkinter.mainloop()
+
 class Renderer:
 	def __init__(self, width, height, image):
 		self.image = image(width, height)
