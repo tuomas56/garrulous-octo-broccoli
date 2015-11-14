@@ -26,7 +26,7 @@ def render_to_image(html_source, css_source, height, width, renderer):
 	for node in layout_tree:
 		node.layout(root)
 
-	renderer = painting.Renderer(width, height, renderer_string_to_class(renderer))
+	renderer = painting.Renderer(width, height, renderer)
 	image = renderer.render(layout_tree)
 
 	return image
@@ -45,7 +45,7 @@ def main(argv):
 		with open(args.html, "r") as f:
 			html = f.read()
 	else:
-		css = ''
+		html = ''
 
 	if args.css != '':
 		with open(args.css, "r") as f:
@@ -53,7 +53,7 @@ def main(argv):
 	else:
 		css = ''
 
-	image = render_to_image(html, css, args.height, args.width, args.renderer)
+	image = render_to_image(html, css, args.height, args.width, renderer_string_to_class(args.renderer))
 
 	if (args.out is not None) and args.renderer != 'tkinter':
 		with open(args.out, "w") as f:

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import tkinter
+import tkinter.filedialog
 import painting
 import main as m
 import networking
+import sys
 
 class CanvasImage(painting.Image):
 	def __init__(self, width, height):
@@ -22,9 +24,13 @@ def main():
 	top.title("Browser")
 	canvas = tkinter.Canvas(top, width=500, height=500)
 	html, css = '', ''
+	curl = tkinter.StringVar()
 	def do_go_button():
-		nonlocal html, css
-		html, css = networking.get_page(address.get())
+		do_reload()
+
+	def do_reload():
+		nonlocal html, css, curl
+		html, css = networking.get_page(curl.get())
 		do_render()
 
 	def do_resize(event):
@@ -51,8 +57,27 @@ def main():
 		canvas.delete("all")
 		image.dump(canvas)
 
+	def do_open():
+		nonlocal curl
+		filename = tkinter.filedialog.askopenfilename(title="Open a file", filetypes=(("Html files", "*.html"), ("All files", "*.*")))
+		curl.set("file://" + filename)
+		do_reload()
+
+	def do_save():
+		file = tkinter.filedialog.asksaveasfile(title="Save file as", filetypes=(("Html files", "*.html"), ("All files", "*.*")))
+		file.write("<style>%s</style>%s" % (css, html))
+
 	frame = tkinter.Frame(top)
-	address = tkinter.Entry(frame)
+	menu = tkinter.Menu(top, tearoff=False)
+	filemenu = tkinter.Menu(menu, tearoff=False)
+	viewmenu = tkinter.Menu(menu, tearoff=False)
+	menu.add_cascade(label="File", menu=filemenu)
+	menu.add_cascade(label="View", menu=viewmenu)
+	viewmenu.add_command(label="Reload", command=do_reload)
+	filemenu.add_command(label="Open", command=do_open)
+	filemenu.add_command(label="Save", command=do_save)
+	top.configure(menu=menu)
+	address = tkinter.Entry(frame, textvariable=curl)
 	address.pack(side="left", expand=True, fill="x")
 	go_button = tkinter.Button(frame, command=do_go_button, text="Go")
 	go_button.pack(side="right")
