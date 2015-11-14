@@ -30,7 +30,7 @@ def main():
 
 	def do_reload():
 		nonlocal html, css, curl
-		html, css = networking.get_page(curl.get())
+		html, css = networking.get_page(curl.get()).decode(), ''
 		do_render()
 
 	def do_resize(event):
