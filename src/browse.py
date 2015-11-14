@@ -1,6 +1,7 @@
 import tkinter
 import painting
 import main
+import networking
 
 class CanvasImage(painting.Image):
 	def __init__(self, width, height):
@@ -19,7 +20,7 @@ def main():
 	canvas = tkinter.Canvas(top, width=500, height=500)
 	def do_go_button():
 		html, css = networking.get_page(address.get())
-		image = main.render_to_image(html, css, 500, 500, CanvasImage)
+		image = main.render_to_image(htsrml, css, 500, 500, CanvasImage)
 		image.dump(canvas)
 	go_button = tkinter.Button(top, command=do_go_button)
 	go_button.pack(side=tkinter.RIGHT)
