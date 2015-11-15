@@ -9,7 +9,7 @@ def get_page(url):
 	elif scheme == 'file':
 		return retrieve_file(server + path)
 	else:
-		raise RuntimeError()
+		return b''
 
 def retrieve_http(url):
 	return urllib.request.urlopen(url).read()

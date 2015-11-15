@@ -21,7 +21,7 @@ class CanvasImage(painting.Image):
 			canvas.create_rectangle(x, y, x + width, y + height, fill="#%.2x%.2x%.2x" % (r, g, b), outline="")
 
 def main(url=''):
-	top = gui.Tk(title='Browser')
+	top = gui.Tk(title='Browser', set_minsize=True)
 	html, css = '', ''
 	curl = tkinter.StringVar(value=url)
 	def do_new_window():
@@ -104,6 +104,7 @@ def main(url=''):
 	canvas.get().bind("<Button-2>", do_right_mouse)
 	canvas.get().bind("<Enter>", do_mouse_enter)
 	canvas.get().bind("<Leave>", do_mouse_leave)
+	do_reload()
 	top.mainloop()
 
 if __name__ == "__main__":
