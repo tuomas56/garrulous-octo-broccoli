@@ -1,7 +1,9 @@
 from layout import *
 import tkinter
 
-class PPMImage:
+class Image: pass
+
+class PPMImage(Image):
 	def __init__(self, width, height):
 		self.pixels = [(255, 255, 255)]*(width*height)
 		self.height = height
@@ -32,7 +34,7 @@ class PPMImage:
 				row_string.append("%s %s %s" % tuple([str(x).rjust(3, ' ') for x in self.get_pixel(x, y)]))
 			file.write(' '.join(row_string) + '\n')
 
-class SVGImage:
+class SVGImage(Image):
 	def __init__(self, width, height):
 		self.width, self.height = width, height
 		self.rects = []
@@ -47,7 +49,7 @@ class SVGImage:
 				(x, y, width, height, color[0], color[1], color[2]))
 		file.write('</svg>')
 
-class TKImage:
+class TKImage(Image):
 	def __init__(self, width, height):
 		self.width, self.height = width, height
 		self.rects = []

@@ -13,8 +13,12 @@ Following the tutorial by Matt Brubeck on [his website.](http://limpet.net/mbrub
 * Block rendering.
 * Background and border colours.
 * Inline stylesheets in *style* elements.
+* Simple Tkinter based browser.
+* Simple networking with *http* and *file* url schemes.
 
 ##Usage
+
+###Rendering
 
 As API:
 
@@ -40,4 +44,22 @@ optional arguments:
   --height HEIGHT      height of output document.
   --width WIDTH        width of output document.
   --out OUT            file to save output to.
+```
+
+###Browser
+
+As API:
+
+```python
+>>> import browse
+>>> browse.main(input('enter a url: '))
+```
+
+From CLI:
+
+```
+usage: browse.py [url]
+
+optional arguments:
+	url				   url to display.
 ```

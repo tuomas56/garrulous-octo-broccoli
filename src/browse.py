@@ -19,12 +19,12 @@ class CanvasImage(painting.Image):
 		for x, y, width, height, (r, g, b) in self.rects:
 			canvas.create_rectangle(x, y, x + width, y + height, fill="#%.2x%.2x%.2x" % (r, g, b), outline="")
 
-def main():
+def main(url=''):
 	top = tkinter.Tk()
 	top.title("Browser")
 	canvas = tkinter.Canvas(top, width=500, height=500)
 	html, css = '', ''
-	curl = tkinter.StringVar()
+	curl = tkinter.StringVar(url)
 	def do_go_button():
 		do_reload()
 
@@ -92,4 +92,4 @@ def main():
 	top.mainloop()
 
 if __name__ == "__main__":
-	main()
+	main(sys.argv[1] if len(sys.argv) == 2 else '')
