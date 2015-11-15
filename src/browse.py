@@ -2,6 +2,7 @@
 
 import tkinter
 import tkinter.filedialog
+import gui
 import painting
 import main as m
 import networking
@@ -20,11 +21,9 @@ class CanvasImage(painting.Image):
 			canvas.create_rectangle(x, y, x + width, y + height, fill="#%.2x%.2x%.2x" % (r, g, b), outline="")
 
 def main(url=''):
-	top = tkinter.Tk()
-	top.title("Browser")
-	canvas = tkinter.Canvas(top, width=500, height=500)
+	top = gui.Tk(title='Browser')
 	html, css = '', ''
-	curl = tkinter.StringVar(url)
+	curl = tkinter.StringVar()
 	def do_go_button():
 		do_reload()
 
@@ -53,9 +52,9 @@ def main(url=''):
 
 	def do_render():
 		nonlocal html, css, canvas
-		image = m.render_to_image(html, css, canvas.winfo_height(), canvas.winfo_width(), CanvasImage)
-		canvas.delete("all")
-		image.dump(canvas)
+		image = m.render_to_image(html, css, canvas.get().winfo_height(), canvas.get().winfo_width(), CanvasImage)
+		canvas.get().delete("all")
+		image.dump(canvas.get())
 
 	def do_open():
 		nonlocal curl
@@ -66,29 +65,43 @@ def main(url=''):
 	def do_save():
 		file = tkinter.filedialog.asksaveasfile(title="Save file as", filetypes=(("Html files", "*.html"), ("All files", "*.*")))
 		file.write("<style>%s</style>%s" % (css, html))
+		file.close()
 
-	frame = tkinter.Frame(top)
-	menu = tkinter.Menu(top, tearoff=False)
-	filemenu = tkinter.Menu(menu, tearoff=False)
-	viewmenu = tkinter.Menu(menu, tearoff=False)
-	menu.add_cascade(label="File", menu=filemenu)
-	menu.add_cascade(label="View", menu=viewmenu)
-	viewmenu.add_command(label="Reload", command=do_reload)
-	filemenu.add_command(label="Open", command=do_open)
-	filemenu.add_command(label="Save", command=do_save)
-	top.configure(menu=menu)
-	address = tkinter.Entry(frame, textvariable=curl)
-	address.pack(side="left", expand=True, fill="x")
-	go_button = tkinter.Button(frame, command=do_go_button, text="Go")
-	go_button.pack(side="right")
-	frame.pack(fill="x")
-	canvas.pack(fill="both", expand=True)
-	canvas.bind("<Configure>", do_resize)
-	canvas.bind("<Key>", do_key)
-	canvas.bind("<Button-1>", do_left_mouse)
-	canvas.bind("<Button-2>", do_right_mouse)
-	canvas.bind("<Enter>", do_mouse_enter)
-	canvas.bind("<Leave>", do_mouse_leave)
+	canvas = gui.Canvas(width=500, height=500, pack_expand=True, pack_fill='both')
+	top << canvas
+
+	address = gui.Entry(textvariable=curl, pack_side='left', pack_expand=True, pack_fill='x')
+
+	go_button = gui.Button(command=do_go_button, text="Go", pack_side='right')
+
+	with gui.frame(top, pack_fill='x') as f:
+		f << address
+		f << go_button
+
+	menu = gui.Menu(tearoff=False)
+	filemenu = gui.Menu(tearoff=False)
+	viewmenu = gui.Menu(tearoff=False)
+
+	top << menu
+	menu << filemenu
+	menu << viewmenu
+
+	menu.get().add_cascade(label="File", menu=filemenu.get())
+	menu.get().add_cascade(label="View", menu=viewmenu.get())
+
+	viewmenu.get().add_command(label="Reload", command=do_reload)
+
+	filemenu.get().add_command(label="Open", command=do_open)
+	filemenu.get().add_command(label="Save", command=do_save)
+
+	top.get().configure(menu=menu.get())
+
+	canvas.get().bind("<Configure>", do_resize)
+	canvas.get().bind("<Key>", do_key)
+	canvas.get().bind("<Button-1>", do_left_mouse)
+	canvas.get().bind("<Button-2>", do_right_mouse)
+	canvas.get().bind("<Enter>", do_mouse_enter)
+	canvas.get().bind("<Leave>", do_mouse_leave)
 	top.mainloop()
 
 if __name__ == "__main__":
