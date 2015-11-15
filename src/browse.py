@@ -23,7 +23,10 @@ class CanvasImage(painting.Image):
 def main(url=''):
 	top = gui.Tk(title='Browser')
 	html, css = '', ''
-	curl = tkinter.StringVar()
+	curl = tkinter.StringVar(value=url)
+	def do_new_window():
+		main()
+
 	def do_go_button():
 		do_reload()
 
@@ -89,7 +92,8 @@ def main(url=''):
 
 	viewmenu.get().add_command(label="Reload", command=do_reload)
 
-	filemenu.get().add_command(label="Open", command=do_open)
+	filemenu.get().add_command(label="New Window", command=do_new_window)
+	filemenu.get().add_command(label="Open File", command=do_open)
 	filemenu.get().add_command(label="Save", command=do_save)
 
 	top.get().configure(menu=menu.get())
