@@ -100,7 +100,8 @@ class RGBColor(Color):
 
 class HSLColor(Color):
 	def __init__(self, h, s, l):
-		self.r, self.g, self.b = colorsys.hls_to_rgb(h, l, s)
+		self.r, self.g, self.b = colorsys.hls_to_rgb(int(h.value)/255, int(l.value)/100, int(s.value)/100)
+		self.r, self.g, self.b = map(lambda x: int(x*255), (self.r, self.g, self.b))
 
 class Length:
 	def __init__(self, val, unit):
