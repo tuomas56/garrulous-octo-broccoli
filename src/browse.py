@@ -24,15 +24,20 @@ def main(url=''):
 	top = gui.Tk(title='Browser', set_minsize=True)
 	html, css = '', ''
 	curl = tkinter.StringVar(value=url)
+	history = [curl.get()]
+	index = 0
 	def do_new_window():
 		main()
 
 	def do_go_button():
+		nonlocal index
+		history.insert(index + 1, curl.get())
+		index += 1
 		do_reload()
 
 	def do_reload():
 		nonlocal html, css, curl
-		html, css = networking.get_page(curl.get()).decode(), ''
+		html, css = networking.get_page(history[index]).decode(), ''
 		do_render()
 
 	def do_resize(event):
@@ -63,19 +68,33 @@ def main(url=''):
 		nonlocal curl
 		filename = tkinter.filedialog.askopenfilename(title="Open a file", filetypes=(("Html files", "*.html"), ("All files", "*.*")))
 		curl.set("file://" + filename)
-		do_reload()
+		do_go_button()
 
 	def do_save():
 		file = tkinter.filedialog.asksaveasfile(title="Save file as", filetypes=(("Html files", "*.html"), ("All files", "*.*")))
 		file.write("<style>%s</style>%s" % (css, html))
 		file.close()
 
+	def do_back():
+		nonlocal index
+		if index > 0:
+			index -= 1
+			do_reload()
+
+	def do_forward():
+		nonlocal index
+		if index < (len(history) - 1):
+			index += 1
+			do_reload()
+
 	canvas = gui.Canvas(width=500, height=500, pack_expand=True, pack_fill='both')
 	top << canvas
 
-	address = gui.Entry(textvariable=curl, pack_side='left', pack_expand=True, pack_fill='x')
+	address = gui.Entry(textvariable=curl, pack_expand=True, pack_fill='x')
 
 	with gui.frame(top, pack_fill='x') as f:
+		f << gui.Button(command=do_back, text="<-")
+		f << gui.Button(command=do_forward, text="->")
 		f << address
 		f << gui.Button(command=do_go_button, text="Go", pack_side='right')
 
