@@ -23,6 +23,7 @@ class _tkwrapper:
 
 	def __lshift__(self, child):
 		self.append(child)
+		return self
 
 	def pack(self, **kwargs):
 		for child in self.children:
@@ -78,6 +79,7 @@ class Tk:
 
 	def __lshift__(self, child):
 		self.append(child)
+		return self
 
 	def pack(self):
 		for child in self.children:
@@ -101,3 +103,5 @@ def frame(parent, **kwargs):
 	yield f
 	for child in f.children:
 		child.pack(side=tk.LEFT)
+
+__all__ = [frame, Button, Canvas, Entry, Label, Menu, Frame, Tk]
