@@ -72,11 +72,9 @@ def main(url=''):
 
 	address = gui.Entry(textvariable=curl, pack_side='left', pack_expand=True, pack_fill='x')
 
-	go_button = gui.Button(command=do_go_button, text="Go", pack_side='right')
-
 	with gui.frame(top, pack_fill='x') as f:
 		f << address
-		f << go_button
+		f << gui.Button(command=do_go_button, text="Go", pack_side='right')
 
 	menu = gui.Menu(tearoff=False)
 	filemenu = gui.Menu(tearoff=False)
