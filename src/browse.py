@@ -93,7 +93,7 @@ def main(url=''):
 	address = gui.Entry(textvariable=curl, pack_expand=True, pack_fill='x')
 
 	with gui.frame(top, pack_fill='x') as f:
-		f << gui.Button(command=do_back, text="<-") << gui.Button(command=do_forward, text="->")
+		f << gui.Button(command=do_back, text="◀") << gui.Button(command=do_forward, text="▶")
 		f << address << gui.Button(command=do_go_button, text="Go", pack_side='right')
 
 	menu = gui.Menu(tearoff=False)
